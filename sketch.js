@@ -10,6 +10,10 @@ const COLORS = {
   nightBackground: 0,
   dayStroke: [250, 250, 250, 40],
   nightStroke: 40,
+  mnDayStroke: "orangered",
+  mnNightStroke: "orange",
+  scDayStroke: "gold",
+  scNightStroke: "aqua",
 };
 
 
@@ -123,7 +127,7 @@ function drawClock(base) {
   drawCircleBase(base.hour);
 
   // --- SEGUNDOS ---
-  stroke(day ? "gold" : "aqua");
+  stroke(day ? COLORS.scDayStroke : COLORS.scNightStroke);
   strokeWeight(3);
   circle(
     base.sec.x,
@@ -132,7 +136,7 @@ function drawClock(base) {
   );
 
   // --- MINUTOS ---
-  stroke(day ? "orangered" : "orange");
+  stroke(day ? COLORS.mnDayStroke : COLORS.mnNightStroke);
   circle(
     base.min.x,
     base.min.y,
