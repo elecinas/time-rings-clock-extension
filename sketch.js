@@ -1,8 +1,8 @@
 //Medidas de los círculos base
 const baseCircle = {
-  sec: { x: 160, y: 270, radMin: 60, radMax: 180 },
-  min: { x: 260, y: 210, radMin: 70, radMax: 200 },
-  hour: { x: 150, y: 150, radMin: 75, radMax: 220 },
+  sec: { x: 140, y: 250, radMin: 60, radMax: 180 },
+  min: { x: 240, y: 190, radMin: 70, radMax: 200 },
+  hour: { x: 130, y: 130, radMin: 75, radMax: 220 },
 };
 
 let luna, sol, clockFont, creditsFont;
@@ -68,14 +68,14 @@ function draw() {
   fill(day ? "DeepSkyBlue": 0);
   stroke(day ? color(250, 250, 250, 40) : 40);
 
-  // Anillos base
+  // --- ANILLOS BASE ---
   noFill();
   strokeWeight(1.5);
   drawCircleBase(baseCircle.sec);
   drawCircleBase(baseCircle.min);
   drawCircleBase(baseCircle.hour);
 
-  // Segundos
+  // --- SEGUNDOS ---
   stroke(day ? "gold" : "aqua");
   strokeWeight(3);
   circle(
@@ -84,7 +84,7 @@ function draw() {
     map(seconds, 0, 59, baseCircle.sec.radMin, baseCircle.sec.radMax)
   );
 
-  // Minutos
+  // --- MINUTOS ---
   stroke(day ? "orangered" : "orange");
   circle(
     baseCircle.min.x,
@@ -92,11 +92,11 @@ function draw() {
     map(minutes, 0, 59, baseCircle.min.radMin, baseCircle.min.radMax)
   );
 
-  // Astro (escala horas)
+  // --- HORAS / ASTRO ---
   const astroDiameter = map( hours + minutes / 60 + seconds / 3600, 0, 24, baseCircle.hour.radMin, baseCircle.hour.radMax );
   const astro = day ? sol : luna;
 
-  if (astro)
+  if (astro && astro.width > 0)
     {
       image( astro, baseCircle.hour.x - astroDiameter / 2, baseCircle.hour.y - astroDiameter / 2, astroDiameter, astroDiameter );   
     } else {
@@ -105,14 +105,14 @@ function draw() {
       circle(baseCircle.hour.x, baseCircle.hour.y, astroDiameter)
     }
 
-  // Reloj de refuerzo
+  // --- RELOJ DIGITAL ---
   noStroke();
   fill(day ? "MidnightBlue" : 255);
   if (clockFont) textFont(clockFont, 35);
-  textAlign(RIGHT); 
+  textAlign(RIGHT, TOP); 
   text(
     nf(hours, 2) + ":" + nf(minutes, 2) + ":" + nf(seconds, 2),
-    360,
-    380
+    380,
+    15
   );
 }
