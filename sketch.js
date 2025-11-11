@@ -8,10 +8,10 @@ const baseCircle = {
 let luna, sol, clockFont, creditsFont;
 
 //función que dibuja los círculos base cuando se la invoca
-const drawCircleBase = (circle, scale) => {
+const drawCircleBase = (circle) => {
   for (let i = 7; i >= 1; i--) {
-    const d = map(i, 1, 7, circle.radMin, circle.radMax) * scale;
-    ellipse(circle.x * scale, circle.y * scale, d, d);
+    const d = map(i, 1, 7, circle.radMin, circle.radMax);
+    ellipse(circle.x, circle.y, d, d);
   }
 };
 
@@ -50,15 +50,11 @@ const isDayInBarcelona = (h, mon) => {
 // END IA Generate
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(400, 400);
   loadImage("assets/luna.png", (img) => (luna = img));
   loadImage("assets/sol.png", (img) => (sol = img));
   loadFont("assets/ds-digi.ttf", (font) => (clockFont = font));
   loadFont("assets/Quicksand-Medium.ttf", (font) => (creditsFont = font));
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
@@ -68,70 +64,55 @@ function draw() {
   const mon = month();
   const day = isDayInBarcelona(hours, mon);
 
-  // escala respecto al diseño base 400×400
-  const scale = min(width / 400, height / 400);
-
   background(day ? "DeepSkyBlue" : 0);
   fill(day ? "DeepSkyBlue": 0);
   stroke(day ? color(250, 250, 250, 40) : 40);
 
   // Anillos base
   noFill();
-  strokeWeight(1.5 * scale);
-  drawCircleBase(baseCircle.sec, scale);
-  drawCircleBase(baseCircle.min, scale);
-  drawCircleBase(baseCircle.hour, scale);
+  strokeWeight(1.5);
+  drawCircleBase(baseCircle.sec);
+  drawCircleBase(baseCircle.min);
+  drawCircleBase(baseCircle.hour);
 
   // Segundos
   stroke(day ? "gold" : "aqua");
-  strokeWeight(3 * scale);
+  strokeWeight(3);
   circle(
-    baseCircle.sec.x * scale,
-    baseCircle.sec.y * scale,
-    map(seconds, 0, 59, baseCircle.sec.radMin, baseCircle.sec.radMax) * scale
+    baseCircle.sec.x,
+    baseCircle.sec.y,
+    map(seconds, 0, 59, baseCircle.sec.radMin, baseCircle.sec.radMax)
   );
 
   // Minutos
   stroke(day ? "orangered" : "orange");
   circle(
-    baseCircle.min.x * scale,
-    baseCircle.min.y * scale,
-    map(minutes, 0, 59, baseCircle.min.radMin, baseCircle.min.radMax) * scale
+    baseCircle.min.x,
+    baseCircle.min.y,
+    map(minutes, 0, 59, baseCircle.min.radMin, baseCircle.min.radMax)
   );
 
   // Astro (escala horas)
-  const astroDiameter = map( hours + minutes / 60 + seconds / 3600, 0, 24, baseCircle.hour.radMin, baseCircle.hour.radMax ) * scale;
+  const astroDiameter = map( hours + minutes / 60 + seconds / 3600, 0, 24, baseCircle.hour.radMin, baseCircle.hour.radMax );
   const astro = day ? sol : luna;
 
   if (astro)
     {
-      image( astro, baseCircle.hour.x * scale - astroDiameter / 2, baseCircle.hour.y * scale - astroDiameter / 2, astroDiameter, astroDiameter );   
+      image( astro, baseCircle.hour.x - astroDiameter / 2, baseCircle.hour.y - astroDiameter / 2, astroDiameter, astroDiameter );   
     } else {
       noStroke();
       fill(255, 255, 255)
-      circle(baseCircle.hour.x * scale, baseCircle.hour.y * scale, astroDiameter)
+      circle(baseCircle.hour.x, baseCircle.hour.y, astroDiameter)
     }
 
   // Reloj de refuerzo
   noStroke();
   fill(day ? "MidnightBlue" : 255);
-  if (clockFont) textFont(clockFont, 35 * scale);
+  if (clockFont) textFont(clockFont, 35);
   textAlign(RIGHT); 
   text(
     nf(hours, 2) + ":" + nf(minutes, 2) + ":" + nf(seconds, 2),
-    360 * scale,
-    380 * scale
+    360,
+    380
   );
-
-  //Título y créditos
-  text("Time Rings", 360 * scale, 50 * scale);
-  if(creditsFont) textFont(creditsFont, 16 * scale);
-  text("Esther Lecina", 360 * scale, 70 * scale);
-
-  // Cita Freepik
-  if (creditsFont) textFont(creditsFont, 8 * scale);
-  noStroke();
-  fill(day ? "MidnightBlue" : 200);
-  textAlign(LEFT, BOTTOM);
-  text("Sun and Moon icons designed by Freepik", 10 * scale, (400 - 25) * scale);
 }
