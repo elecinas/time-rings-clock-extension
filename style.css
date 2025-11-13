@@ -1,3 +1,7 @@
+*{
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -5,3 +9,32 @@ html, body {
 canvas {
   display: block;
 }
+
+.control-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+
+  /* añadidos: centrar y dar tamaño fijo al botón */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: 1px solid #000000;
+  outline-offset: -1px
+}
+
+.icon-button {
+  fill: "DeepSkyBlue";
+  display: block;
+}
+
+/* asegurar que los elementos internos del SVG se coloreen */
+/* .icon-button path,
+.icon-button circle,
+.icon-button rect,
+.icon-button polygon,
+.icon-button g {
+  fill: white !important;
+  stroke: white !important;
+} */

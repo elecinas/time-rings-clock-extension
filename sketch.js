@@ -1,3 +1,43 @@
+//Iconos de los botones
+const BUTTONS = {
+  work: {
+    position: { x: 300, y:  340 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M96 176C96 149.5 117.5 128 144 128C170.5 128 192 149.5 192 176L192 288L448 288L448 176C448 149.5 469.5 128 496 128C522.5 128 544 149.5 544 176L544 192L560 192C586.5 192 608 213.5 608 240L608 288C625.7 288 640 302.3 640 320C640 337.7 625.7 352 608 352L608 400C608 426.5 586.5 448 560 448L544 448L544 464C544 490.5 522.5 512 496 512C469.5 512 448 490.5 448 464L448 352L192 352L192 464C192 490.5 170.5 512 144 512C117.5 512 96 490.5 96 464L96 448L80 448C53.5 448 32 426.5 32 400L32 352C14.3 352 0 337.7 0 320C0 302.3 14.3 288 32 288L32 240C32 213.5 53.5 192 80 192L96 192L96 176z"/></svg>',
+    size: 'big',
+    action: () => { console.log("⏳ Trabajar") }
+  },
+  rest: {
+    position: { x: 340, y:  340 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M184 48C170.7 48 160 58.7 160 72C160 110.9 183.4 131.4 199.1 145.1L200.2 146.1C216.5 160.4 224 167.9 224 184C224 197.3 234.7 208 248 208C261.3 208 272 197.3 272 184C272 145.1 248.6 124.6 232.9 110.9L231.8 109.9C215.5 95.7 208 88.1 208 72C208 58.7 197.3 48 184 48zM128 256C110.3 256 96 270.3 96 288L96 480C96 533 139 576 192 576L384 576C425.8 576 461.4 549.3 474.5 512L480 512C550.7 512 608 454.7 608 384C608 313.3 550.7 256 480 256L128 256zM480 448L480 320C515.3 320 544 348.7 544 384C544 419.3 515.3 448 480 448zM320 72C320 58.7 309.3 48 296 48C282.7 48 272 58.7 272 72C272 110.9 295.4 131.4 311.1 145.1L312.2 146.1C328.5 160.4 336 167.9 336 184C336 197.3 346.7 208 360 208C373.3 208 384 197.3 384 184C384 145.1 360.6 124.6 344.9 110.9L343.8 109.9C327.5 95.7 320 88.1 320 72z"/></svg>',
+    size: 'big',
+    action: () => { console.log("☕ Descansar") }  
+  },
+  play: {
+    position: { x: 300, y:  380 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/></svg>',
+    size: 'little',
+    action: () => { console.log("Iniciar") }
+  },
+  stop: {
+    position: { x: 340, y:  380 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M160 96L480 96C515.3 96 544 124.7 544 160L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 160C96 124.7 124.7 96 160 96z"/></svg>',
+    size: 'little',
+    action: () => { console.log("Detener") }
+  },
+  pause: {
+    position: { x: 320, y:  380 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z"/></svg>',
+    size: 'little',
+    action: () => { console.log("Pausar") }
+  },
+  reload: {
+    position: { x: 360, y:  380 },
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M552 256L408 256C398.3 256 389.5 250.2 385.8 241.2C382.1 232.2 384.1 221.9 391 215L437.7 168.3C362.4 109.7 253.4 115 184.2 184.2C109.2 259.2 109.2 380.7 184.2 455.7C259.2 530.7 380.7 530.7 455.7 455.7C463.9 447.5 471.2 438.8 477.6 429.6C487.7 415.1 507.7 411.6 522.2 421.7C536.7 431.8 540.2 451.8 530.1 466.3C521.6 478.5 511.9 490.1 501 501C401 601 238.9 601 139 501C39.1 401 39 239 139 139C233.3 44.7 382.7 39.4 483.3 122.8L535 71C541.9 64.1 552.2 62.1 561.2 65.8C570.2 69.5 576 78.3 576 88L576 232C576 245.3 565.3 256 552 256z"/></svg>',
+    size: 'little',
+    action: () => { console.log("Reiniciar") }
+  },
+};
+
 //Medidas de los círculos base
 const baseCircle = {
   sec: { x: 140, y: 250, radMin: 60, radMax: 180 },
@@ -16,9 +56,8 @@ const COLORS = {
   scNightStroke: "aqua",
 };
 
-
 let luna, sol, clockFont, creditsFont;
-let btnTarea, btnDescanso, btnDetener;
+let btnWork, btnRest, btnStop, btnPlay, btnPause, btnReload;
 
 //función que dibuja los círculos base cuando se la invoca
 const drawCircleBase = (circle) => {
@@ -75,28 +114,26 @@ const isDayInBarcelona = (h, mon) => {
 
 // END IA Generate
 
-function setup() {
-  createCanvas(400, 400);
-
+function drawButton(btn, btnInfo) {
   // Crear botones de control
-  btnTarea = createButton("Iniciar tarea");
-  btnDescanso = createButton("Iniciar descanso");
-  btnDetener = createButton("Detener");
+  btn = createButton("");
+  btn.elt.innerHTML = btnInfo.icon; // SVG como HTML
+  btn.elt.querySelector("svg").classList.add("icon-button");
+  btn.class("control-button");
+  btn.position(btnInfo.position.x, btnInfo.position.y);
+  btnInfo.size === 'big' ? btn.size(40, 40) : btn.size(20, 20);
+  btn.mousePressed(() => btnInfo.action());
+}
 
-  btnTarea.position(20, height - 40);
-  btnDescanso.position(150, height - 40);
-  btnDetener.position(300, height - 40);
+function setup() {
+  createCanvas(400, 500);
 
-  btnTarea.style("background", "#000");
-  btnDescanso.style("background", "#000");
-  btnDetener.style("background", "#000");
-  btnTarea.style("color", "white");
-  btnDescanso.style("color", "white");
-  btnDetener.style("color", "white");
-
-  btnTarea.mousePressed(() => console.log("⏳ Iniciar tarea"));
-  btnDescanso.mousePressed(() => console.log("☕ Iniciar descanso"));
-  btnDetener.mousePressed(() => console.log("🛑 Detener"));
+  drawButton(btnWork, BUTTONS.work);
+  drawButton(btnRest, BUTTONS.rest);
+  drawButton(btnPlay, BUTTONS.play);
+  drawButton(btnStop, BUTTONS.stop);
+  drawButton(btnPause, BUTTONS.pause);
+  drawButton(btnReload, BUTTONS.reload);  
 
   loadImage("assets/luna.png", (img) => (luna = img));
   loadImage("assets/sol.png", (img) => (sol = img));
