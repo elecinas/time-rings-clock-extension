@@ -20,12 +20,12 @@ canvas {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  outline: 1px solid #000000;
+  outline: 1px solid #ffffff;
   outline-offset: -1px
 }
 
 .icon-button {
-  fill: "DeepSkyBlue";
+  fill: #ffffff;
   display: block;
 }
 
