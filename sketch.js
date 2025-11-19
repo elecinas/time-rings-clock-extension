@@ -87,16 +87,20 @@ const WORK_SECONDS = 25 * 60; //25 minutos
 const REST_SECONDS = 0.05 * 60; //5 minutos
 
 //Variables temporizador
-let mode = "idle"; // "idle" | "work" | "rest"
-let remainingSeconds = null; //segundos restantes
-let excededSeconds = 0; //segundos excedidos tras acabar la sesión
-let duration = 0; //duración total de la sesión en segundos
-let targetEnd = 0; //marca de tiempo final (timestamp -> millis())
-let paused = false; //si está pausado o no
-let running = false; //si el temporizador está en marcha
-let pausedAt = 0; //marca de tiempo cuando se pausó (timestamp -> millis())
-let alarmSound = null; //sonido de alarma al finalizar
+let mode = "idle"; //"idle", "work", "rest"
+let remainingSeconds = 0;
+let excededSeconds = 0;
+let duration = 0;
+let targetEnd = 0; // en segundos totales (desde medianoche)
+let paused = false;
+let running = false;
+let pausedAt = 0;
+let exceededStart = 0; // declarar aquí
+let alarmSound = null;
 let alarmPlayed = false;
+
+//Variables tiempo
+let hours, minutes, seconds, totalSeconds;
 
 //Variables reloj
 let luna, sol, clockFont, creditsFont;
@@ -180,43 +184,58 @@ function setup() {
   loadImage("assets/sol.png", (img) => (sol = img));
   loadFont("assets/ds-digi.ttf", (font) => (clockFont = font));
   loadFont("assets/Quicksand-Medium.ttf", (font) => (creditsFont = font));
+
+  // Recuperar sesión anterior si existe
+  restoreSavedSession();
 }
 
 function draw() {
+  hours = hour();
+  minutes = minute();
+  seconds = second();
+  totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+  //--- DIBUJO RELOJ ---
   drawClock(baseCircle);
   updateButtonColors();
 
   //--- ACTUALIZACIÓN TEMPORIZADOR ---
-  // Solo actualizar si la sesión está en marcha (running)
   if (running && !paused && mode !== "idle") {
-    remainingSeconds = ceil((targetEnd - millis()) / 1000);
+    remainingSeconds = targetEnd - totalSeconds;
+    
     if (remainingSeconds <= 0 && !alarmPlayed) {
-      remainingSeconds = 0;
       alarmPlayed = true;
       alarmSound?.play();
-      stopSession();
+      excededSeconds = 0;
+      exceededStart = totalSeconds;
+      // Guardar que se finalizó
+      saveSavedSession();
     }
   }
+
   //--- DIBUJO TEMPORIZADOR ---
   fill(255);
   noStroke();
   textAlign(RIGHT, TOP);
   if (clockFont) textFont(clockFont, 50);
-  text(fmtMMSS(remainingSeconds), width - 117, 358);
+  remainingSeconds >= 0
+    ? text(fmtMMSS(remainingSeconds), width - 117, 358)
+    : text(
+        fmtMMSS(mode == "rest" ? REST_SECONDS : WORK_SECONDS),
+        width - 117,
+        358
+      );
 
   //--- DIBUJO TIEMPO FUERA DE PROGRAMA ---
-  let isDay = isDayInBarcelona(hour(), month());
-  fill(isDay ? COLORS.day.mnStroke : COLORS.night.mnStroke);
-  noStroke();
-  textAlign(RIGHT, TOP);
-  if (clockFont) textFont(clockFont, 30);
-  text(`+${fmtMMSS(remainingSeconds)}`, width - 240, 375);
-
-  let horas = hour();
-  let minutos = minute();
-  let segundos = second();
-  let totalSegundos = horas * 3600 + minutos * 60 + segundos;
-  console.log(totalSegundos);
+  if (remainingSeconds < 0) {
+    let isDay = isDayInBarcelona(hour(), month());
+    excededSeconds = totalSeconds - exceededStart;
+    fill(isDay ? COLORS.day.mnStroke : COLORS.night.mnStroke);
+    noStroke();
+    textAlign(RIGHT, TOP);
+    if (clockFont) textFont(clockFont, 30);
+    text(`${fmtMMSS(excededSeconds)}`, width - 240, 375);
+  }
 }
 
 function updateButtonColors() {
@@ -244,7 +263,6 @@ function updateButtonColors() {
   if (mode === "rest" && btnRest) {
     btnRest.elt.querySelector("svg").style.fill = fillColor;
   }
-  console.log("update:", "mode:", mode, "running:", running, "paused:", paused);
 }
 
 function selectSessionMode(kind) {
@@ -255,6 +273,7 @@ function selectSessionMode(kind) {
   running = false;
   paused = false;
   alarmPlayed = false;
+  saveSavedSession();
 }
 
 function startSession() {
@@ -262,29 +281,30 @@ function startSession() {
   paused = false;
   running = true;
   alarmPlayed = false;
-  targetEnd = millis() + duration * 1000;
+  targetEnd = totalSeconds + duration;
+  saveSavedSession();
 }
 
 function pauseSession() {
   if (mode === "idle" || !running) return;
   paused = true;
   running = false;
-  pausedAt = millis();
+  pausedAt = totalSeconds;
+  saveSavedSession();
 }
 
-//reanuda la sesión pausada
 function resumeSession() {
   if (mode === "idle" || !paused) return;
-  //ajusta el targetEnd sumando el tiempo que ha estado pausado
-  const pausedDelta = millis() - pausedAt;
+  const pausedDelta = totalSeconds - pausedAt;
   targetEnd += pausedDelta;
   paused = false;
-  running = true; // <-- asegurar que la sesión vuelva a estar en marcha
+  running = true;
   if (remainingSeconds <= 0) {
     remainingSeconds = 0;
     running = false;
     stopSession();
   }
+  saveSavedSession();
 }
 
 function stopSession() {
@@ -292,9 +312,9 @@ function stopSession() {
   running = false;
   duration = mode === "work" ? WORK_SECONDS : REST_SECONDS;
   remainingSeconds = duration;
-
   targetEnd = 0;
   alarmPlayed = false;
+  saveSavedSession();
 }
 
 function resetSession() {
@@ -306,12 +326,51 @@ function resetSession() {
   remainingSeconds = 0;
   duration = 0;
   alarmPlayed = false;
+  localStorage.removeItem("timerSession");
+}
+
+// --- FUNCIONES DE PERSISTENCIA (localStorage) ---
+function saveSavedSession() {
+  const session = {
+    mode,
+    running,
+    paused,
+    targetEnd,
+    duration,
+    alarmPlayed,
+    pausedAt,
+    exceededStart,
+    excededSeconds,
+  };
+  localStorage.setItem("timerSession", JSON.stringify(session));
+}
+
+function restoreSavedSession() {
+  const saved = localStorage.getItem("timerSession");
+  if (saved) {
+    try {
+      const session = JSON.parse(saved);
+      mode = session.mode || "idle";
+      running = session.running || false;
+      paused = session.paused || false;
+      targetEnd = session.targetEnd || 0;
+      duration = session.duration || 0;
+      alarmPlayed = session.alarmPlayed || false;
+      pausedAt = session.pausedAt || 0;
+      exceededStart = session.exceededStart || 0;
+      excededSeconds = session.excededSeconds || 0;
+      remainingSeconds = session.duration || 0;
+    } catch (e) {
+      console.error("Error restaurando sesión:", e);
+    }
+  }
 }
 
 //formatea segundos a MM:SS
 function fmtMMSS(totalSeconds) {
-  const minutes = floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+  const s = totalSeconds >= 0 ? totalSeconds : Math.abs(totalSeconds);
+  const minutes = floor(s / 60);
+  const seconds = s % 60;
   return nf(minutes, 2) + ":" + nf(seconds, 2);
 }
 
@@ -339,9 +398,6 @@ function drawButton(btnInfo) {
 }
 
 function drawClock(base) {
-  const hours = hour();
-  const minutes = minute();
-  const seconds = second();
   const mon = month();
   const day = isDayInBarcelona(hours, mon);
 
