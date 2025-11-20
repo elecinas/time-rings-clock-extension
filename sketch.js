@@ -342,11 +342,11 @@ function saveSavedSession() {
     exceededStart,
     excededSeconds,
   };
-  localStorage.setItem("timerSession", JSON.stringify(session));
+  storeItem("timerSession", JSON.stringify(session));
 }
 
 function restoreSavedSession() {
-  const saved = localStorage.getItem("timerSession");
+  const saved = getItem("timerSession");
   if (saved) {
     try {
       const session = JSON.parse(saved);
