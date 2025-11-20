@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Configuración</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+      color: #333;
+    }
+    h2 { font-size: 18px; margin-top: 0; }
+    .group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button {
+      width: 100%;
+      background: #00BFFF; /* DeepSkyBlue */
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #009ACD; }
+    .success { color: green; font-size: 0.9em; display: none; margin-top: 5px; text-align: center;}
+  </style>
+</head>
+<body>
+  <h2>Configuración</h2>
+  
+  <div class="group">
+    <label for="workTime">Tiempo de Trabajo (min)</label>
+    <input type="number" id="workTime" min="1" value="25">
+  </div>
+
+  <div class="group">
+    <label for="restTime">Tiempo de Descanso (min)</label>
+    <input type="number" id="restTime" min="1" value="5">
+  </div>
+
+  <button id="saveBtn">Guardar Cambios</button>
+  <p id="msg" class="success">¡Guardado! Reinicia el reloj.</p>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>

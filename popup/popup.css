@@ -29,12 +29,7 @@ canvas {
   display: block;
 }
 
-/* asegurar que los elementos internos del SVG se coloreen */
-/* .icon-button path,
-.icon-button circle,
-.icon-button rect,
-.icon-button polygon,
-.icon-button g {
-  fill: white !important;
-  stroke: white !important;
-} */
+.no-border {
+  outline: none !important;
+  border: none !important;
+}
