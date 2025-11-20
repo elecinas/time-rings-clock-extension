@@ -84,7 +84,7 @@ const COLORS = {
 //Tiempos hardcodeados
 //TODO: que lo indique el usuario
 const WORK_SECONDS = 25 * 60; //25 minutos
-const REST_SECONDS = 0.05 * 60; //5 minutos
+const REST_SECONDS = 5 * 60; //5 minutos
 
 //Variables temporizador
 let mode = "idle"; //"idle", "work", "rest"
@@ -166,11 +166,14 @@ const isDayInBarcelona = (h, mon) => {
 
 function preload() {
   //https://pixabay.com/sound-effects/search/timer/
-  loadSound("assets/alarm.mp3", (sound) => (alarmSound = sound));
+  // loadSound("assets/alarm.mp3", (sound) => (alarmSound = sound));
 }
 
 function setup() {
   createCanvas(400, 500);
+
+  //carga nativa del audio
+  alarmSound = new Audio("assets/alarm.mp3");
 
   btnWork = drawButton(BUTTONS.work);
   btnRest = drawButton(BUTTONS.rest);
@@ -205,7 +208,10 @@ function draw() {
     
     if (remainingSeconds <= 0 && !alarmPlayed) {
       alarmPlayed = true;
-      alarmSound?.play();
+      // alarmSound?.play();
+        alarmSound.play().catch(error => {
+            console.log("El navegador bloqueó el audio hasta que el usuario interactúe:", error);
+        });
       excededSeconds = 0;
       exceededStart = totalSeconds;
       // Guardar que se finalizó
@@ -265,7 +271,16 @@ function updateButtonColors() {
   }
 }
 
+// Detiene el audio de la alarma si está sonando
+function killAudio() {
+  if (alarmSound) {
+    alarmSound.pause();
+    alarmSound.currentTime = 0;
+  }
+}
+
 function selectSessionMode(kind) {
+  killAudio();
   if (mode === kind) return;
   mode = kind;
   duration = kind === "work" ? WORK_SECONDS : REST_SECONDS;
@@ -308,6 +323,7 @@ function resumeSession() {
 }
 
 function stopSession() {
+  killAudio();
   paused = false;
   running = false;
   duration = mode === "work" ? WORK_SECONDS : REST_SECONDS;
@@ -318,6 +334,7 @@ function stopSession() {
 }
 
 function resetSession() {
+  killAudio();
   if (mode === "idle") {
     return;
   }

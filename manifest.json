@@ -1,20 +1,25 @@
 {
   "manifest_version": 3,
-  "name": "Time Rings",
-  "description": "Extension clock that shows time in a creative way using p5.js",
+  "name": "time rings",
+  "description": "Extension clock",
   "version": "1.0",
 
   "icons": {
-    "coffee": "icons/coffee.svg",
-    "work": "icons/work.svg"
+    "48": "icons/work.png",
+    "96": "icons/coffee.png"
   },
 
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Time Rings"
+    "default_title": "Time Rings",
+    "default_icon": {
+      "48": "icons/work.png",
+      "96": "icons/coffee.png"
+    }
   },
 
-  "permissions": [
-    "storage"
-  ]
+  "permissions": ["storage"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; object-src 'self'; style-src 'self' 'unsafe-inline'"
+  }
 }
