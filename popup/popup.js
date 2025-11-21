@@ -1,4 +1,4 @@
-//Iconos de los botones
+//Información de los botones
 const BUTTONS = {
   work: {
     name: "work",
@@ -81,6 +81,7 @@ const baseCircle = {
   hour: { x: 130, y: 130, radMin: 75, radMax: 220 },
 };
 
+//Colores día y noche
 const COLORS = {
   day: {
     background: "DeepSkyBlue",
@@ -98,7 +99,7 @@ const COLORS = {
 
 //Tiempos por defecto en segundos
 let workDurationSettings = 25 //minutos
-let restDurationSettings = 0.05 //minutos
+let restDurationSettings = 5 //minutos
 
 let WORK_SECONDS = workDurationSettings * 60; //en segundos
 let REST_SECONDS = restDurationSettings * 60; //en segundos
@@ -112,7 +113,7 @@ let targetEnd = 0; // en segundos totales (desde medianoche)
 let paused = false;
 let running = false;
 let pausedAt = 0;
-let exceededStart = 0; // declarar aquí
+let exceededStart = 0;
 let alarmSound = null;
 let alarmPlayed = false;
 
@@ -199,11 +200,6 @@ function loadSettingsFromStorage() {
   }
 }
 
-function preload() {
-  //https://pixabay.com/sound-effects/search/timer/
-  // loadSound("assets/alarm.mp3", (sound) => (alarmSound = sound));
-}
-
 function setup() {
   createCanvas(400, 400);
 
@@ -211,8 +207,12 @@ function setup() {
   loadSettingsFromStorage();
 
   //carga nativa del audio
+  // Nota: algunos navegadores bloquean 
+  // la reproducción automática de audio
+  //https://pixabay.com/sound-effects/search/timer/
   alarmSound = new Audio("assets/alarm.mp3");
 
+  //Dibuja los botones
   btnWork = drawButton(BUTTONS.work);
   btnRest = drawButton(BUTTONS.rest);
   btnPlay = drawButton(BUTTONS.play);
@@ -220,6 +220,7 @@ function setup() {
   btnPause = drawButton(BUTTONS.pause);
   btnReload = drawButton(BUTTONS.reload);
   btnConfig = drawButton(BUTTONS.config);
+  //guarda todos los botones en un array para actualizar colores
   allButtons = [btnWork, btnRest, btnPlay, btnStop, btnPause, btnReload, btnConfig];
 
   loadImage("assets/luna.png", (img) => (luna = img));
@@ -232,6 +233,7 @@ function setup() {
 }
 
 function draw() {
+  //--- ACTUALIZACIÓN TIEMPO ---
   hours = hour();
   minutes = minute();
   seconds = second();
@@ -247,7 +249,6 @@ function draw() {
     
     if (remainingSeconds <= 0 && !alarmPlayed) {
       alarmPlayed = true;
-      // alarmSound?.play();
         alarmSound.play().catch(error => {
             console.log("El navegador bloqueó el audio hasta que el usuario interactúe:", error);
         });
@@ -263,8 +264,9 @@ function draw() {
   noStroke();
   textAlign(RIGHT, TOP);
   if (clockFont) textFont(clockFont, 50);
+  // Muestra tiempo restante o tiempo por defecto si ha excedido
   remainingSeconds >= 0
-    ? text(fmtMMSS(remainingSeconds), width - 117, 330)
+    ? text(fmtMMSS(remainingSeconds), width - 117, 340)
     : text(
         fmtMMSS(mode == "rest" ? REST_SECONDS : WORK_SECONDS),
         width - 117,
@@ -272,6 +274,7 @@ function draw() {
       );
 
   //--- DIBUJO TIEMPO FUERA DE PROGRAMA ---
+  // Si se ha excedido, muestra el tiempo excedido
   if (remainingSeconds < 0) {
     let isDay = isDayInBarcelona(hour(), month());
     excededSeconds = totalSeconds - exceededStart;
@@ -283,28 +286,31 @@ function draw() {
   }
 }
 
+// Actualiza los colores de los botones según día/noche 
+// y estado del temporizador
 function updateButtonColors() {
   const isDay = isDayInBarcelona(hour(), month());
   const fillColor = isDay ? COLORS.day.mnStroke : COLORS.night.mnStroke;
 
+  // Resetea todos los botones a blanco
   for (const btnObj of allButtons) {
     if (!btnObj) continue;
     const svg = btnObj.elt.querySelector("svg");
     if (svg) svg.style.fill = "white";
   }
-
+  // Aplica color según estado en el botón btnPlay
   if (running && !paused && btnPlay) {
     btnPlay.elt.querySelector("svg").style.fill = fillColor;
   }
-
+  // Aplica color según estado en el botón btnPause
   if (paused && btnPause) {
     btnPause.elt.querySelector("svg").style.fill = fillColor;
   }
-
+  // Aplica color según moodo en btnWork
   if (mode === "work" && btnWork) {
     btnWork.elt.querySelector("svg").style.fill = fillColor;
   }
-
+  // Aplica color según moodo en btnRest
   if (mode === "rest" && btnRest) {
     btnRest.elt.querySelector("svg").style.fill = fillColor;
   }
@@ -318,6 +324,8 @@ function killAudio() {
   }
 }
 
+// --- FUNCIONES TEMPORIZADOR ---
+// Selecciona el modo de sesión (work/rest)
 function selectSessionMode(kind) {
   killAudio();
   if (mode === kind) return;
@@ -330,6 +338,7 @@ function selectSessionMode(kind) {
   saveSavedSession();
 }
 
+// Inicia la sesión
 function startSession() {
   if (mode === "idle") return;
   paused = false;
@@ -339,6 +348,7 @@ function startSession() {
   saveSavedSession();
 }
 
+// Pausa la sesión
 function pauseSession() {
   if (mode === "idle" || !running) return;
   paused = true;
@@ -347,6 +357,7 @@ function pauseSession() {
   saveSavedSession();
 }
 
+// Reanuda la sesión
 function resumeSession() {
   if (mode === "idle" || !paused) return;
   const pausedDelta = totalSeconds - pausedAt;
@@ -361,6 +372,7 @@ function resumeSession() {
   saveSavedSession();
 }
 
+// Detiene la sesión
 function stopSession() {
   killAudio();
   paused = false;
@@ -372,6 +384,7 @@ function stopSession() {
   saveSavedSession();
 }
 
+// Resetea la sesión
 function resetSession() {
   killAudio();
   if (mode === "idle") {
@@ -386,6 +399,7 @@ function resetSession() {
 }
 
 // --- FUNCIONES DE PERSISTENCIA (localStorage) ---
+// Guarda el estado actual del temporizador
 function saveSavedSession() {
   const session = {
     mode,
@@ -401,6 +415,7 @@ function saveSavedSession() {
   storeItem("timerSession", JSON.stringify(session));
 }
 
+// Restaura el estado del temporizador guardado
 function restoreSavedSession() {
   const saved = getItem("timerSession");
   if (saved) {
@@ -430,30 +445,39 @@ function fmtMMSS(totalSeconds) {
   return nf(minutes, 2) + ":" + nf(seconds, 2);
 }
 
+//dibuja un botón según la información dada
 function drawButton(btnInfo) {
+  //crea el botón
   const btn = createButton("");
+  //añade el icono SVG
   btn.elt.innerHTML = btnInfo.icon;
-
+  //añade clase al SVG para estilos CSS
   const svg = btn.elt.querySelector("svg");
   if (svg) {
     svg.classList.add("icon-button");
   }
-
+  //aplica estilos y posición
   btn.class("control-button");
+  //añade clase no-border si es necesario
   if (btnInfo.noBorder) btn.addClass("no-border");
+  //posición y tamaño
   btn.position(btnInfo.position.x, btnInfo.position.y);
+  //tamaño según "flag"
   btnInfo.size === "big" ? btn.size(40, 40) : btn.size(20, 20);
 
+  //ajustes CSS adicionales para asegurar visibilidad y clics
   btn.elt.style.position = "absolute";
   btn.elt.style.zIndex = 1000;
   btn.elt.style.pointerEvents = "auto";
 
+  //asigna la acción al hacer clic
   btn.mousePressed(() => {
     btnInfo.action();
   });
   return btn;
 }
 
+//dibuja el reloj
 function drawClock(base) {
   const mon = month();
   const day = isDayInBarcelona(hours, mon);
