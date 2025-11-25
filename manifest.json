@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "time rings",
-  "description": "Extension clock",
+  "description": "Extension pomodoro clock",
   "version": "1.0",
 
   "icons": {
@@ -21,11 +21,8 @@
   "sidebar_action": {
     "default_panel": "sidebar/sidebar.html",
     "default_title": "Configuración Time Rings",
-    "default_icon": "icons/icon48.png"
+    "default_icon": "icons/coffee.png"
   },
 
-  "permissions": ["storage"],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; object-src 'self'; style-src 'self' 'unsafe-inline'"
-  }
+  "permissions": ["storage"]
 }

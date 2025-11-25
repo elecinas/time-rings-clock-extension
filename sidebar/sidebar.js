@@ -1,3 +1,5 @@
+//ATENCIÓN: Toda esta parte del proyecto (sidebar) ha sido generada por IA
+// Y posteriormente revisada y corregida por mí.
 document.addEventListener('DOMContentLoaded', () => {
   const workInput = document.getElementById('workTime');
   const restInput = document.getElementById('restTime');
@@ -24,8 +26,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Feedback visual
     msg.style.display = 'block';
     setTimeout(() => msg.style.display = 'none', 2000);
-    
-    // Opcional: Avisar al popup si está abierto (avanzado), 
-    // pero como usan localStorage compartido, el popup lo leerá al reiniciar sesión.
   });
 });
