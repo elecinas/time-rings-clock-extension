@@ -72,7 +72,7 @@ Esto permite que el temporizador siga siendo coherente incluso si el usuario cie
 
 ---
 
-## 🎛️ Controles
+## Controles
 
 | Botón | Función |
 |-------|---------|
